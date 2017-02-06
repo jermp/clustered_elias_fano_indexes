@@ -9,4 +9,4 @@ do the following:
     $ make -j[number of processes]
 	
 --------------
-To be updated.
+The code will be imported soon.
