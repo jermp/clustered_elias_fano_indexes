@@ -53,7 +53,8 @@ The collection containing the docID and frequency lists follow the format of [`d
 The folder `test_data` constains an example of such collection organization. It consists in a sample of 244 postings lists drawn from Gov2 (one of the two datasets used for the experiments in the paper). For convenience all datasets have been compressed with `gzip` and must be uncompressed before running the experiments.
 In particular, the `.docs` sequences have been split into two parts: these must be uncompressed and concatenated one after the other by doing
 
-    $ cat test_collection.bin.docs.part_1 test_collection.bin.docs.part_2 > test_collection.bin.docs
+    $ cat test_collection.bin.docs.part_1 test_collection.bin.docs.part_2 \
+        > test_collection.bin.docs
 
 The folder also contains the postings lists' positions `test_collection.lists_positions.gz` and an examplar clustering `test_collection.clusters.gz` (see section [Computing the clusters](#computing-the-clusters)); a set of 500 queries named `queries`.
 
@@ -66,7 +67,9 @@ The executable `compute_clusters` can be used to cluster a set of postings lists
 
 As an example, the following command computes the clusters over the test collection as the ones in `test_collection.clusters.gz`:
 
-    $ ./compute_clusters ../test_data/test_collection.bin ../test_data/test_collection.plists_positions.gz 24622344 244 3 5 5 8 10 > test_collection.clusters
+    $ ./compute_clusters ../test_data/test_collection.bin \
+                         ../test_data/test_collection.plists_positions.gz \
+                         24622344 244 3 5 5 8 10 > test_collection.clusters
 
 The computed clusters is a file listing one cluster per row. A cluster is an integer sequence: the first integer represents the number of postings lists in the cluster, the others represent the positions of the sequences belonging to the cluster. The file must be compressed with `gzip` to be used in the experiments.
 
@@ -79,7 +82,8 @@ For the other parameters of the executables, see the corresponding `.cpp` files.
 ##### Example 1.
 The command
 
-    $ ./create_clustered_freq_index_fb ../test_data/test_collection.bin ../test_data/test_collection.clusters.gz 800000 clustered_opt_index.800K.bin
+    $ ./create_clustered_freq_index_fb ../test_data/test_collection.bin \
+    ../test_data/test_collection.clusters.gz 800000 clustered_opt_index.800K.bin
 
 builds a clustered Elias-Fano index:
 * using the frequency-based approach;
@@ -89,19 +93,21 @@ builds a clustered Elias-Fano index:
 ##### Example 2.
 The command
 
-    $ ./create_freq_index opt ../test_data/test_collection.bin --clusters ../test_data/test_collection.clusters.gz opt_index.bin
+    $ ./create_freq_index opt ../test_data/test_collection.bin \
+    --clusters ../test_data/test_collection.clusters.gz opt_index.bin
 
 builds a partitioned Elias-Fano index on the same postings lists used by the corresponding clustered index (see Example 1.), as specified with the option `--clusters` and serialized to the binary file `opt_index.bin`.
 
 ##### Example 3.
 The command
 
-    $ ./create_freq_index block_interpolative ../test_data/test_collection.bin --clusters ../test_data/test_collection.clusters.gz bic_index.bin
+    $ ./create_freq_index block_interpolative ../test_data/test_collection.bin \
+    --clusters ../test_data/test_collection.clusters.gz bic_index.bin
 
 builds a Binary Interpolative index on the same postings lists used by the corresponding clustered index (see Example 1.), as specified with the option `--clusters` and serialized to the binary file `bic_index.bin`.
 
 
-A comparison between the space of such indexes is summarized by the following table, where CPEF indicated the clustered Elias-Fano index, PEF the partitioned Elias-Fano index and BIC the Binary Interpolative one.
+A comparison between the space of such indexes is summarized by the following table, where CPEF indicates the clustered Elias-Fano index, PEF the partitioned Elias-Fano index and BIC the Binary Interpolative one.
 
 |     **Index**     |**bits x posting** |
 |-------------------|-------------------|
