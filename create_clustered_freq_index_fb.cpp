@@ -31,8 +31,7 @@ struct cluster_data {
 cluster_data
 reference_selection(ds2i::clustered_binary_freq_collection const& input,
                     uint32_t cluster_size,
-                    uint32_t MAX_REF_SIZE,
-                    uint64_t universe)
+                    uint32_t MAX_REF_SIZE)
 {
     std::unordered_map<posting_t, uint32_t> occs;
     auto occs_cend = occs.cend();
@@ -42,7 +41,8 @@ reference_selection(ds2i::clustered_binary_freq_collection const& input,
 
     int elias_fano_type =
         ds2i::indexed_sequence::index_type::elias_fano;
-
+    uint64_t universe = input.num_docs();
+    
     for (const auto& plist : input) {
 
         auto const& docs = plist.docs;
@@ -108,11 +108,11 @@ void create_clustered_collection(ds2i::clustered_binary_freq_collection& input,
                                  const char* cluster_filename,
                                  const char* output_filename,
                                  bool check,
-                                 uint32_t MAX_REF_SIZE,
-                                 uint64_t universe)
+                                 uint32_t MAX_REF_SIZE)
 {
     using namespace ds2i;
-    logger() << "Processing " << input.num_docs() << " documents" << std::endl;
+    uint64_t universe = input.num_docs();
+    logger() << "Processing " << universe << " documents" << std::endl;
     double tick = get_time_usecs();
     double user_tick = get_user_time_usecs();
     clustered_opt_index::builder builder(universe, params);
@@ -150,7 +150,7 @@ void create_clustered_collection(ds2i::clustered_binary_freq_collection& input,
         input.set_positions();
 
         auto const& cluster_data =
-            reference_selection(input, cluster_size, MAX_REF_SIZE, universe);
+            reference_selection(input, cluster_size, MAX_REF_SIZE);
 
         auto const& reference = cluster_data.reference;
         auto const& partitions = cluster_data.partitions;
@@ -207,9 +207,9 @@ int main(int argc, const char** argv)
 {
     using namespace ds2i;
 
-    if (argc < 5) {
+    if (argc < 4) {
         std::cerr << "Usage: " << argv[0]
-                  << " <collection basename> <cluster filename> <MAX_REF_SIZE> <universe> [<output filename>] [--check]"
+                  << " <collection basename> <cluster filename> <MAX_REF_SIZE> [<output filename>] [--check]"
                   << std::endl;
         return 1;
     }
@@ -217,15 +217,14 @@ int main(int argc, const char** argv)
     const char* input_basename = argv[1];
     const char* cluster_filename = argv[2];
     const uint32_t MAX_REF_SIZE = std::atoi(argv[3]);
-    const uint64_t universe = std::stoull(argv[4]);
 
     const char* output_filename = nullptr;
-    if (argc > 5) {
-        output_filename = argv[5];
+    if (argc > 4) {
+        output_filename = argv[4];
     }
 
     bool check = false;
-    if (argc > 6 && std::string(argv[6]) == "--check") {
+    if (argc > 5 && std::string(argv[5]) == "--check") {
         check = true;
     }
 
@@ -235,7 +234,7 @@ int main(int argc, const char** argv)
 
     create_clustered_collection(
         input, params, cluster_filename,
-        output_filename, check, MAX_REF_SIZE, universe
+        output_filename, check, MAX_REF_SIZE
     );
 
     return 0;

@@ -29,11 +29,11 @@ void create_clustered_collection(ds2i::clustered_binary_freq_collection& input,
                                  const char* output_filename,
                                  bool check,
                                  uint32_t MAX_REF_SIZE,
-                                 uint64_t universe,
                                  uint32_t divisor)
 {
     using namespace ds2i;
-    logger() << "Processing " << input.num_docs() << " documents" << std::endl;
+    uint64_t universe = input.num_docs();
+    logger() << "Processing " << universe << " documents" << std::endl;
     double tick = get_time_usecs();
     double user_tick = get_user_time_usecs();
     clustered_opt_index::builder builder(universe, params);
@@ -145,7 +145,7 @@ int main(int argc, const char** argv)
 
     if (argc < 5) {
         std::cerr << "Usage: " << argv[0]
-                  << " <collection basename> <cluster filename> <MAX_REF_SIZE> <universe> <divisor> [<output filename>] [--check]"
+                  << " <collection basename> <cluster filename> <MAX_REF_SIZE> <divisor> [<output filename>] [--check]"
                   << std::endl;
         std::cerr << "<divisor> represents the amount by which the number of candidates is divided to define the length of an apoch"
                   << std::endl;
@@ -155,16 +155,15 @@ int main(int argc, const char** argv)
     const char* input_basename = argv[1];
     const char* cluster_filename = argv[2];
     const uint32_t MAX_REF_SIZE = std::atoi(argv[3]);
-    const uint64_t universe = std::stoull(argv[4]);
-    const uint32_t divisor = std::atoi(argv[5]);
+    const uint32_t divisor = std::atoi(argv[4]);
 
     const char* output_filename = nullptr;
-    if (argc > 6) {
-        output_filename = argv[6];
+    if (argc > 5) {
+        output_filename = argv[5];
     }
 
     bool check = false;
-    if (argc > 7 && std::string(argv[7]) == "--check") {
+    if (argc > 6 && std::string(argv[6]) == "--check") {
         check = true;
     }
 
@@ -173,7 +172,7 @@ int main(int argc, const char** argv)
     params.log_partition_size = configuration::get().log_partition_size;
     create_clustered_collection(
         input, params, cluster_filename,
-        output_filename, check, MAX_REF_SIZE, universe, divisor
+        output_filename, check, MAX_REF_SIZE, divisor
     );
 
     return 0;

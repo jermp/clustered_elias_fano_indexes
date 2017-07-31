@@ -71,12 +71,11 @@ void create_collection(InputCollection& input,
                        const char* output_filename,
                        const char* cluster_filename,
                        bool check,
-                       std::string const& seq_type,
-                       uint64_t universe)
+                       std::string const& seq_type)
 {
     using namespace ds2i;
-
-    logger() << "Processing " << input.num_docs() << " documents" << std::endl;
+    uint64_t universe = input.num_docs();
+    logger() << "Processing " << universe << " documents" << std::endl;
     double tick = get_time_usecs();
     double user_tick = get_user_time_usecs();
 
@@ -163,12 +162,11 @@ template <typename InputCollection, typename CollectionType>
 void create_collection(InputCollection const& input,
                        ds2i::global_parameters const& params,
                        const char* output_filename, bool check,
-                       std::string const& seq_type,
-                       uint64_t universe)
+                       std::string const& seq_type)
 {
     using namespace ds2i;
-
-    logger() << "Processing " << input.num_docs() << " documents" << std::endl;
+    uint64_t universe = input.num_docs();
+    logger() << "Processing " << universe << " documents" << std::endl;
     double tick = get_time_usecs();
     double user_tick = get_user_time_usecs();
 
@@ -222,7 +220,7 @@ int main(int argc, const char** argv)
 
     if (argc < 3) {
         std::cerr << "Usage: " << argv[0]
-                  << " <index type> <collection basename> <universe>\
+                  << " <index type> <collection basename>\
                     [--clusters] [cluster filename] [<output filename>] [--check]"
                   << std::endl;
         return 1;
@@ -230,26 +228,24 @@ int main(int argc, const char** argv)
 
     std::string type = argv[1];
     const char* input_basename = argv[2];
-    const uint64_t universe = std::stoull(argv[3]);
-
     const char* cluster_filename = nullptr;
     const char* output_filename = nullptr;
     bool check = false;
 
-    if (argc > 4) {
-        if (std::string(argv[4]) == "--clusters") {
-            cluster_filename = argv[5];
-            if (argc > 6 && std::string(argv[6]) == "--check") {
+    if (argc > 3) {
+        if (std::string(argv[3]) == "--clusters") {
+            cluster_filename = argv[4];
+            if (argc > 5 && std::string(argv[5]) == "--check") {
                 check = true;
             } else {
-                output_filename = argv[6];
-                if (argc > 7 && std::string(argv[7]) == "--check") {
+                output_filename = argv[5];
+                if (argc > 6 && std::string(argv[6]) == "--check") {
                     check = true;
                 }
             }
         } else {
-            output_filename = argv[5];
-            set_check(argc, argv, 5, check);
+            output_filename = argv[4];
+            set_check(argc, argv, 4, check);
         }
     }
 
@@ -260,17 +256,17 @@ int main(int argc, const char** argv)
     clustered_binary_freq_collection clustered_input(input_basename, check);
 
     if (false) {
-#define LOOP_BODY(R, DATA, T)                                                                             \
-        } else if (type == BOOST_PP_STRINGIZE(T)) {                                                       \
-            if (cluster_filename) {                                                                       \
-                create_collection<clustered_binary_freq_collection,                                       \
-                                  BOOST_PP_CAT(T, _index)>                                                \
-                    (clustered_input, params, output_filename, cluster_filename, check, type, universe);  \
-            } else {                                                                                      \
-                create_collection<binary_freq_collection,                                                 \
-                                  BOOST_PP_CAT(T, _index)>                                                \
-                    (input, params, output_filename, check, type, universe);                              \
-            }                                                                                             \
+#define LOOP_BODY(R, DATA, T)                                                                   \
+        } else if (type == BOOST_PP_STRINGIZE(T)) {                                             \
+            if (cluster_filename) {                                                             \
+                create_collection<clustered_binary_freq_collection,                             \
+                                  BOOST_PP_CAT(T, _index)>                                      \
+                    (clustered_input, params, output_filename, cluster_filename, check, type);  \
+            } else {                                                                            \
+                create_collection<binary_freq_collection,                                       \
+                                  BOOST_PP_CAT(T, _index)>                                      \
+                    (input, params, output_filename, check, type);                              \
+            }                                                                                   \
 
         BOOST_PP_SEQ_FOR_EACH(LOOP_BODY, _, DS2I_INDEX_TYPES);
 #undef LOOP_BODY
