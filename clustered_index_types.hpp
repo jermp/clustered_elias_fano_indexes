@@ -7,6 +7,6 @@
 
 namespace ds2i {
     typedef clustered_freq_index<
-    		positive_sequence<partitioned_sequence<strict_sequence>>
-    	> clustered_opt_index;
+                positive_sequence<partitioned_sequence<strict_sequence>>
+            > clustered_opt_index;
 }

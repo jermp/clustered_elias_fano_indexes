@@ -81,7 +81,7 @@ preprocess_collection(const char* bin_coll_fn,
             auto const& v = get_block_info(i, list, partition);
             uint32_t lo = v.lo, hi = v.hi, n = v.n, u = v.u;
             int block_best_type =
-            	ds2i::indexed_sequence::best_type(params, u, n);
+                ds2i::indexed_sequence::best_type(params, u, n);
             if (block_best_type == elias_fano_type) {
                 for (uint32_t k = lo; k < hi; ++k) {
                     auto doc_id = list[k];
@@ -109,14 +109,14 @@ preprocess_collection(const char* bin_coll_fn,
     for (auto& x: itfs) {
         x = std::log(M / x);
     }
-    
+
     ds2i::logger() << "collection preprocessed" << std::endl;
 
     return plists;
 }
 
 template<typename DistanceFunction,
-		 typename SeedSelectionFunction>
+         typename SeedSelectionFunction>
 std::vector<ds2i::cluster>
 kmeans(std::vector<plist_t>& plists,
        std::vector<ds2i::cluster::index_t> const& plists_indexes,
@@ -127,23 +127,23 @@ kmeans(std::vector<plist_t>& plists,
        uint32_t TRIALS,
        uint32_t CUT_OFF)
 {
-	auto const& centroids_indexes
-		= seed_selection(plists_indexes, d, plists,
+    auto const& centroids_indexes
+        = seed_selection(plists_indexes, d, plists,
                          itfs, TRIALS, CUT_OFF);
 
-	uint32_t k = centroids_indexes.size();
+    uint32_t k = centroids_indexes.size();
 
-	std::vector<ds2i::cluster> clusters;
-	clusters.reserve(k);
+    std::vector<ds2i::cluster> clusters;
+    clusters.reserve(k);
 
-	for (uint32_t i = 0; i < k; ++i) {
-		clusters.emplace_back(centroids_indexes[i], plists, itfs);
-	}
+    for (uint32_t i = 0; i < k; ++i) {
+        clusters.emplace_back(centroids_indexes[i], plists, itfs);
+    }
 
-	bool termination = false;
+    bool termination = false;
     uint32_t iterations = 0;
-	while (!termination)
-	{
+    while (!termination)
+    {
         // std::cout << "determining closest cluster" << std::endl;
         for (auto& c : clusters) c.incr_iter();
         ++iterations;
@@ -185,8 +185,8 @@ kmeans(std::vector<plist_t>& plists,
         if (empty_cluster) {
             break;
         }
-        
-		termination = true;
+
+        termination = true;
         if (iterations != MAX_ITER)
         {
             // check if we can stop:
@@ -204,14 +204,14 @@ kmeans(std::vector<plist_t>& plists,
                 c.dump();
             }
         }
-	}
+    }
 
-	return clusters;
+    return clusters;
 }
 
 template<typename DistanceFunction,
-		 typename SeedSelectionFunction,
-		 typename NeedsPartitionPredicate>
+         typename SeedSelectionFunction,
+         typename NeedsPartitionPredicate>
 std::list<ds2i::cluster>
 compute_clusters(std::vector<plist_t>& plists
                 , std::vector<double> const& itfs
@@ -224,27 +224,27 @@ compute_clusters(std::vector<plist_t>& plists
                 , SeedSelectionFunction seed_selection
                 , NeedsPartitionPredicate needs_partition)
 {
-	ds2i::cluster root(plists, itfs);
-	uint32_t terms = plists.size();
-	for (uint32_t i = 0; i < terms; ++i)
+    ds2i::cluster root(plists, itfs);
+    uint32_t terms = plists.size();
+    for (uint32_t i = 0; i < terms; ++i)
     {   // initial cluster containing all plists' positions
-		root.add_plist_index(i);
-	}
+        root.add_plist_index(i);
+    }
 
-	std::deque<ds2i::cluster> to_split;
-	to_split.push_back(std::move(root));
-	std::list<ds2i::cluster> final_clusters;
+    std::deque<ds2i::cluster> to_split;
+    to_split.push_back(std::move(root));
+    std::list<ds2i::cluster> final_clusters;
 
-	while (to_split.size())
-	{
-		auto& parent = to_split.front();
-		auto children = std::move(kmeans(plists
+    while (to_split.size())
+    {
+        auto& parent = to_split.front();
+        auto children = std::move(kmeans(plists
                                         , parent.plists_indexes()
                                         , itfs, d, seed_selection
                                         , MAX_ITER, TRIALS, CUT_OFF));
         to_split.pop_front(); // destroy front item
-		for (auto& c : children)
-		{
+        for (auto& c : children)
+        {
             if (c.size()) // cluster may be empty
             {
                 bool np = needs_partition(c, itfs, MAX_REF_SIZE, F);
@@ -264,9 +264,9 @@ compute_clusters(std::vector<plist_t>& plists
                     // ds2i::logger() << "memory freed" << std::endl;
                 }
             }
-		}
-	}
-	return final_clusters;
+        }
+    }
+    return final_clusters;
 }
 
 // argv[1] --> binary collection filename
@@ -298,17 +298,17 @@ int main(int argc, char** argv)
     std::vector<double> itfs(U, 0.0);
 
     auto plists = preprocess_collection(bin_coll_fn,
-    									plists_positions,
-    									itfs, U);
+                                        plists_positions,
+                                        itfs, U);
     typedef std::function<double(uint32_t
-                				, ds2i::cluster const&
-                				, std::vector<plist_t>&
-                				, std::vector<double> const&)> d_fun_t;
+                                , ds2i::cluster const&
+                                , std::vector<plist_t>&
+                                , std::vector<double> const&)> d_fun_t;
     // distance is defined as 1 - cosine_similarity
     d_fun_t d = [&](uint32_t plist_index
-            	   , ds2i::cluster const& cluster
-            	   , std::vector<plist_t>& plists
-            	   , std::vector<double> const& itfs)
+                   , ds2i::cluster const& cluster
+                   , std::vector<plist_t>& plists
+                   , std::vector<double> const& itfs)
     {
         double dot_product = 0.0;
         double squared_list_sum = 0.0;
@@ -316,14 +316,14 @@ int main(int argc, char** argv)
         auto const& centroid = cluster.centroid();
         for (auto const& i : plist) {
             double itfs_i = itfs[i];
-        	dot_product += centroid[i] * itfs_i;
+            dot_product += centroid[i] * itfs_i;
             squared_list_sum += itfs_i * itfs_i;
         }
 
         double sim = dot_product /
             (cluster.centroid_norm2() *
              std::sqrt(squared_list_sum));
-        
+
         return 1.0 - sim;
     };
 
@@ -343,7 +343,7 @@ int main(int argc, char** argv)
 
         if (plists_indexes.size() > CUT_OFF)
         {
-            // pick as base_length the avg length 
+            // pick as base_length the avg length
             size_t s = 0.0;
             for (auto const& i : plists_indexes) {
                 s += plists[i].second.size();
@@ -407,7 +407,7 @@ int main(int argc, char** argv)
         distribution.reserve(k - 1);
         double squared_sum = 0;
         for (auto const& i : candidate_seeds_indexes)
-        {   
+        {
             if (i != seed1_index)
             {   // generate non-uniform distribution using d^2
                 double dist = d(i, seed1_cluster, plists, itfs);
@@ -522,5 +522,5 @@ int main(int argc, char** argv)
         std::cout << std::endl;
     }
 
-	return 0;
+    return 0;
 }

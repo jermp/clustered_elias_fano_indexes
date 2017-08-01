@@ -55,7 +55,7 @@ void create_clustered_collection(ds2i::clustered_binary_freq_collection& input,
         std::vector<std::string> data;
         boost::split(data, line, boost::is_any_of(" "));
         uint32_t cluster_size = std::atoi(data.front().data());
-        
+
         std::cout << "cluster_size: " << cluster_size << std::endl;
 
         docs_positions.reserve(cluster_size);

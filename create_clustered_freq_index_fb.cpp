@@ -42,7 +42,7 @@ reference_selection(ds2i::clustered_binary_freq_collection const& input,
     int elias_fano_type =
         ds2i::indexed_sequence::index_type::elias_fano;
     uint64_t universe = input.num_docs();
-    
+
     for (const auto& plist : input) {
 
         auto const& docs = plist.docs;
@@ -96,7 +96,7 @@ reference_selection(ds2i::clustered_binary_freq_collection const& input,
     std::sort(ref.begin(), ref.end());
 
     std::cout << "reference length: " << ref.size() << std::endl;
-    
+
     return {
         std::move(ref),
         std::move(partitions)
@@ -134,7 +134,7 @@ void create_clustered_collection(ds2i::clustered_binary_freq_collection& input,
         boost::split(data, line, boost::is_any_of(" "));
         uint32_t cluster_size = std::atoi(data.front().data());
         std::cout << "cluster size: " << cluster_size << std::endl;
-        
+
         docs_positions.reserve(cluster_size);
         freqs_positions.reserve(cluster_size);
 
@@ -156,7 +156,7 @@ void create_clustered_collection(ds2i::clustered_binary_freq_collection& input,
         auto const& partitions = cluster_data.partitions;
 
         builder.add_reference(reference.size(), reference.begin());
-        
+
         uint32_t i = 0;
         for (auto const& plist : input)
         {
@@ -169,7 +169,7 @@ void create_clustered_collection(ds2i::clustered_binary_freq_collection& input,
                                      partitions[i++]);
             plog.done_sequence(plist.docs.size());
         }
-        
+
         logger() << "cluster-" << c++ << " encoded:\n";
         builder.print_cluster_stat();
 

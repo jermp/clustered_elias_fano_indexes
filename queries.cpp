@@ -147,11 +147,11 @@ int main(int argc, const char** argv)
                                       queries, type, query_type);
     } else {
         if (false) {
-    #define LOOP_BODY(R, DATA, T)                                                    \
-            } else if (type == BOOST_PP_STRINGIZE(T)) {                              \
-                perftest<BOOST_PP_CAT(T, _index)>                                    \
-                    (index_filename, wand_data_filename,                             \
-                     queries, type, query_type);                                     \
+    #define LOOP_BODY(R, DATA, T)                                            \
+            } else if (type == BOOST_PP_STRINGIZE(T)) {                      \
+                perftest<BOOST_PP_CAT(T, _index)>                            \
+                    (index_filename, wand_data_filename,                     \
+                     queries, type, query_type);                             \
 
             BOOST_PP_SEQ_FOR_EACH(LOOP_BODY, _, DS2I_INDEX_TYPES);
     #undef LOOP_BODY
