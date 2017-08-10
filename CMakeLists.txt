@@ -18,7 +18,7 @@ if (UNIX)
 
 endif()
 
-find_package(Boost 1.60.0 COMPONENTS iostreams unit_test_framework filesystem system thread REQUIRED)
+find_package(Boost 1.58.0 COMPONENTS iostreams unit_test_framework filesystem system thread REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
