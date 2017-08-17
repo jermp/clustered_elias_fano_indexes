@@ -250,18 +250,15 @@ compute_clusters(std::vector<plist_t>& plists
                 bool np = needs_partition(c, itfs, MAX_REF_SIZE, F);
                 c.clean();
                 if (np) {
-                    // ds2i::logger() << "pushing new cluster" << std::endl;
                     to_split.push_back(std::move(c));
                 } else {
                     final_clusters.push_back(std::move(c));
-                    // ds2i::logger() << "final cluster created" << std::endl;
                     // free plists associated to the positions
                     // in the cluster
                     auto const& plists_indexes = c.plists_indexes();
                     for (auto index: plists_indexes) {
                         std::vector<posting_t>().swap(plists[index].second);
                     }
-                    // ds2i::logger() << "memory freed" << std::endl;
                 }
             }
         }
@@ -334,21 +331,19 @@ int main(int argc, char** argv)
                         , uint32_t TRIALS
                         , uint32_t CUT_OFF)
     {
-        // std::cout << "selecting seeds" << std::endl;
         std::vector<uint32_t> seeds; // seeds to be returned
         seeds.reserve(2);
 
         std::vector<ds2i::cluster::index_t> potential_seeds_indexes;
         uint32_t k = plists_indexes.size();
 
-        if (plists_indexes.size() > CUT_OFF)
-        {
+        if (plists_indexes.size() > CUT_OFF) {
             // pick as base_length the avg length
-            size_t s = 0.0;
+            double s = 0.0;
             for (auto const& i : plists_indexes) {
                 s += plists[i].second.size();
             }
-            double base_length = double(s) / plists_indexes.size();
+            double base_length = s / plists_indexes.size();
 
             auto comp = [&](double val, uint32_t i) {
                 return val < plists[i].second.size();
@@ -356,28 +351,28 @@ int main(int argc, char** argv)
 
             auto it_first = plists_indexes.begin();
             auto it_last = plists_indexes.end();
-            float i = 1.0;
+            double i = 1.0;
             uint32_t kk = 0;
-            while (kk < 2)
-            {
-                // std::cout << "looping" << std::endl;
+
+            while (kk < 2) {
                 double perc_less = (1.0 - i * 0.15) * base_length;
                 double perc_more = (1.0 + i * 0.15) * base_length;
-
                 it_first = std::upper_bound(plists_indexes.begin(),
                                             plists_indexes.end(),
                                             perc_less, comp);
                 it_last = std::upper_bound(plists_indexes.begin(),
-                                            plists_indexes.end(),
-                                            perc_more, comp);
-                kk = it_last == it_first ? 0 : it_last - it_first;
+                                           plists_indexes.end(),
+                                           perc_more, comp);
+                kk = it_last - it_first;
                 k = kk;
                 i += 0.05; // 5%
             }
 
             potential_seeds_indexes.reserve(k);
-            potential_seeds_indexes.insert(potential_seeds_indexes.begin(),
-                                            it_first, it_last);
+            potential_seeds_indexes.insert(
+                potential_seeds_indexes.begin(),
+                it_first, it_last
+            );
         }
 
         auto const& candidate_seeds_indexes =
@@ -473,8 +468,6 @@ int main(int argc, char** argv)
         // std::cout << "\treference_size: " << reference_size << std::endl;
         // std::cout << "\tmax_reference_size: " << MAX_REF_SIZE << std::endl;
         double redundance = double(reference_size) / c.ints();
-        // std::cout << "\tredundance: " << std::setprecision(4)
-        //         << redundance * 100.0 << "%" << std::endl;
         return reference_size > MAX_REF_SIZE
             || redundance > 0.3; // at most 30% of redundance
     };
