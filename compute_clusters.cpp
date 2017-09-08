@@ -278,7 +278,7 @@ int main(int argc, char** argv)
                   << "\t[num. of trials in seed selection, e.g., 5]\n"
                   << "\t[cut-off threshold in seed selection, e.g., 5]\n"
                   << "\t[divisor of universe to define max. reference size, e.g., 8]\n"
-                  << "\t[max. number of k-means iterations, e.g., 10]\n"
+                  << "\t[max. number of k-means iterations, e.g., 10]"
                   << std::endl;
         return 1;
     }
