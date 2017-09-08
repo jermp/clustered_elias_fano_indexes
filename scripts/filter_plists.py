@@ -23,6 +23,7 @@ def extract_pos_len(input):
 	lines = []
 	pos = 0
 	total_ints = 0
+	first = True
 
 	while True:
 		bytes = input.read(4)
@@ -30,11 +31,16 @@ def extract_pos_len(input):
 			break
 		 # 'I' stands for unsigned int 4 bytes
 		length = struct.unpack('I', bytes)[0]
+		if first and length == 1:
+			bytes = input.read(4)
+			print "universe:", struct.unpack('I', bytes)[0]
+			first = False
+
 		total_ints += length
 		lines.append([pos, length])
 		pos += length + 1
 		input.seek(4 * pos)
-		
+
 	return [lines, total_ints]
 
 
@@ -58,7 +64,7 @@ excluded_plists_positions_list = []
 
 print "filtering plists"
 for i in xrange(0, plists):
-	
+
 	line = lines[i]
 	pos = line[0]
 	size = line[1]

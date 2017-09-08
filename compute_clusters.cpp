@@ -266,18 +266,22 @@ compute_clusters(std::vector<plist_t>& plists
     return final_clusters;
 }
 
-// argv[1] --> binary collection filename
-// argv[2] --> plists' positions gzipped file
-// argv[3] --> universe
-// argv[4] --> num of plists
-// argv[5] --> threshold frequency of postings' selection
-// argv[6] --> number of trials in seed_selection
-// argv[7] --> cut-off threshold in seed_selection
-// argv[8] --> divisor of universe to define maximum reference size
-// argv[9] --> maximum number of k-means iterations
 int main(int argc, char** argv)
 {
-    if (argc < 10) return 1;
+    if (argc < 10) {
+        std::cout << "Usage " << argv[0] << ":\n"
+                  << "\t[binary collection filename]\n"
+                  << "\t[lists postitions (gzipped) filename]\n"
+                  << "\t[universe]\n"
+                  << "\t[num. lists]\n"
+                  << "\t[threshold frequency of postings' selection, e.g., 3]\n"
+                  << "\t[num. of trials in seed selection, e.g., 5]\n"
+                  << "\t[cut-off threshold in seed selection, e.g., 5]\n"
+                  << "\t[divisor of universe to define max. reference size, e.g., 8]\n"
+                  << "\t[max. number of k-means iterations, e.g., 10]\n"
+                  << std::endl;
+        return 1;
+    }
 
     const char* bin_coll_fn = argv[1];
     const char* positions_fn = argv[2];
