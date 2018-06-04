@@ -3,7 +3,7 @@ Clustered Elias-Fano Indexes
 -----------------------------
 This is the code used for the experiments in the paper [*Clustered Elias-Fano Indexes*](http://pages.di.unipi.it/pibiri/papers/TOIS17.pdf), by Giulio Ermanno Pibiri and Rossano Venturini, published in ACM TOIS 2017 [1].
 
-This guide is meant to provide a brief overview of the library and to illustrate its funtionalities through some examples.
+This guide is meant to provide a brief overview of the library and to illustrate its functionalities through some examples.
 ##### Table of contents
 * [Building the code](#building-the-code)
 * [Input data format](#input-data-format)
